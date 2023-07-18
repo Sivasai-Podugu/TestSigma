@@ -33,12 +33,12 @@ class Fare{
     static final float busV3 = (float)(busV2+(0.02 * busV2));
 
     static final float trainV1 = 5f;
-    static final float trainV2 = (float)(trainV1+(0.02 * trainV1));
-    static final float trainV3 = (float)(trainV2+(0.02 * trainV2));
+    static final float trainV2 = (float)(trainV1+(0.05 * trainV1));
+    static final float trainV3 = (float)(trainV2+(0.05 * trainV2));
 
     static final float flightV1 = 30f;
-    static final float flightV2 = (float)(flightV1+(0.02 * flightV1));
-    static final float flightV3 = (float)(flightV2+(0.02 * flightV2));
+    static final float flightV2 = (float)(flightV1+(0.08 * flightV1));
+    static final float flightV3 = (float)(flightV2+(0.08 * flightV2));
 
     
 
