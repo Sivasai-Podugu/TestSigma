@@ -9,6 +9,7 @@ import com.example.securitytask.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,8 +34,7 @@ public class V1Controller {
 
     @GetMapping("/v1")
     public String loginV1(Authentication authentication, @CookieValue("V1Jwt") String v1jwt) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        User user = userRepo.findByEmail(userDetails.getUsername());
+
         if(v1jwt.isEmpty()){
             return "deniedv1";
         }
@@ -46,11 +46,22 @@ public class V1Controller {
 
     @GetMapping("/token/v1/generate")
     public String generateToken(Authentication authentication, HttpServletResponse httpServletResponse){
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String usernameToGenerateToken;
 
-        String jwt = jwtTokenUtil.generateToken(userDetails.getUsername()+"_v1user");
-        System.out.println(userDetails.getUsername());
-        User user = userRepo.findByEmail(userDetails.getUsername());
+        if(authentication.getPrincipal() instanceof DefaultOAuth2User) {
+            DefaultOAuth2User user = (DefaultOAuth2User) authentication.getPrincipal();
+            System.out.println(user.getAttributes());
+            usernameToGenerateToken = user.getAttribute("email")!= null ?user.getAttribute("email"): user.getAttribute("login")+"@gmail.com";
+            System.out.println("usernameToGenerateToken: "+ usernameToGenerateToken);
+        }else {
+            UserDetails user = (UserDetails) authentication.getPrincipal();
+            usernameToGenerateToken = user.getUsername();
+            System.out.println("usernameToGenerateToken: "+ usernameToGenerateToken);
+        }
+
+        String jwt = jwtTokenUtil.generateToken(usernameToGenerateToken+"_v1user");
+        System.out.println(usernameToGenerateToken);
+        User user = userRepo.findByEmail(usernameToGenerateToken);
         user.setApiUser(true);
         userRepo.save(user);
         Cookie cookie = new Cookie("V1Jwt", jwt);

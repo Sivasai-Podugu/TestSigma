@@ -6,6 +6,9 @@ import com.example.securitytask.services.DefaultUserService;
 import com.example.securitytask.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -55,28 +58,21 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
             username =((UserDetails) authentication.getPrincipal()).getUsername();
         }
         redirectUrl = "/dashboard";
-        System.out.println("Cookies before");
+        String usernameToGenerateToken;
 
-        Cookie[] cookies = request.getCookies();
-        System.out.println("After Cookies ");
-        if (cookies != null) {
-            System.out.println("Cookies not empty");
-            for (Cookie cookie : cookies) {
-                System.out.println(cookie.getName());
-                if ("BusinessJwtToken".equals(cookie.getName())) {
-
-                    System.out.println("BusinessJwtToken");
-                    // Add the cookie to the response
-                    response.addCookie(cookie);
-                    break;
-                }
-            }
-        }
-        else{
-            System.out.println("Cookies null");
+        if(authentication.getPrincipal() instanceof DefaultOAuth2User) {
+            DefaultOAuth2User user = (DefaultOAuth2User) authentication.getPrincipal();
+            System.out.println(user.getAttributes());
+            usernameToGenerateToken = user.getAttribute("email")!= null ?user.getAttribute("email"): user.getAttribute("login")+"@gmail.com";
+            System.out.println("usernameToGenerateToken: "+ usernameToGenerateToken);
+        }else {
+            UserDetails user = (UserDetails) authentication.getPrincipal();
+            usernameToGenerateToken = user.getUsername();
+            System.out.println("usernameToGenerateToken: "+ usernameToGenerateToken);
         }
 
-        final String jwt = jwtUtil.generateToken((UserDetails) authentication.getPrincipal());
+        final String jwt = jwtUtil.generateToken(usernameToGenerateToken);
+
         Cookie cookie = new Cookie("BusinessJwtToken", jwt);
 
         cookie.setPath("/");
