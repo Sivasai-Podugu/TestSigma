@@ -45,9 +45,7 @@
         <div class="row">
           <div class="col-md-3">
             <h4> Hi, Welcome <span th:text="${userDetails}"></span> </h4></div>
-          <div class="col-md-3">
-            <a th:href="@{/logout}" class="btn anchor" style="margin-left:500px"> <i class="fa fa-arrow-circle-o-left"></i>&nbsp;Logout</a>
-          </div>
+
           <!-- Insert the "GET V1 ACCESS" button here -->
           <div class="col-md-3" >
             <a th:href="@{/token/v1/generate}" class="btn btn-primary anchor">GET V1 ACCESS</a>
@@ -56,15 +54,20 @@
           <div class="col-md-3" >
             <a th:href="@{/v1}" class="btn btn-primary anchor">Go To V1</a>
           </div>
+          <div class="col-md-3">
+            <a th:href="@{/logout}" class="btn anchor" > <i class="fa fa-arrow-circle-o-left"></i>&nbsp;Logout</a>
+          </div>
         </div>
-        <div th:if="${param.success == 'true'}" class="success-message">
-          <p>V1 access granted</p>
-        </div>
+
 
       </div>
     </div>
   </div>
 </nav>
+
+<div th:if="${param.success}"class="success-message">
+  <p>V1 access granted</p>
+</div>
 
 <!-- Display the success message if success param is true -->
 
