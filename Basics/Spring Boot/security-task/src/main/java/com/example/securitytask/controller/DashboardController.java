@@ -1,6 +1,7 @@
 package com.example.securitytask.controller;
 
 import com.example.securitytask.repositories.UserRepository;
+import com.example.securitytask.repositories.V1JwtRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -24,6 +25,10 @@ import java.util.List;
 public class DashboardController {
     @Autowired
     UserRepository userRepo;
+
+    @Autowired
+    V1JwtRepository v1JwtRepository;
+
     @GetMapping
     public String displayDashboard(Model model, HttpServletRequest request, Authentication authentication){
         System.out.println(request.getCookies().length);
@@ -45,15 +50,19 @@ public class DashboardController {
             }
         }
 
+        String username;
+
         SecurityContext securityContext = SecurityContextHolder.getContext();
         if(securityContext.getAuthentication().getPrincipal() instanceof DefaultOAuth2User) {
             DefaultOAuth2User user = (DefaultOAuth2User) securityContext.getAuthentication().getPrincipal();
             System.out.println(user.getAttributes());
+            username = user.getAttribute("email")!= null ?user.getAttribute("email"): user.getAttribute("login");
             model.addAttribute("userDetails", user.getAttribute("email")!= null ?user.getAttribute("email"): user.getAttribute("login"));
         }else {
             User user = (User) securityContext.getAuthentication().getPrincipal();
             com.example.securitytask.models.User users = userRepo.findByEmail(user.getUsername());
             model.addAttribute("userDetails", users.getUserName());
+            username = user.getUsername();
         }
 //        if(v1JwtPresent){
 //            com.example.securitytask.models.User user = userRepo.findByEmail(((UserDetails)authentication.getPrincipal()).getUsername());
@@ -65,10 +74,13 @@ public class DashboardController {
 //            user.setApiUser(false);
 //            userRepo.save(user);
 //        }
-        if(businessJwtPresent)
-            return "dashboard";
-        else
-            return "deniedDashboard";
+        System.out.println(userRepo.findByEmail(username));
+        model.addAttribute("listofV1jwt",v1JwtRepository.findByUser(userRepo.findByEmail(username)) );
+
+        return "dashboard";
+
+
     }
+
 
 }

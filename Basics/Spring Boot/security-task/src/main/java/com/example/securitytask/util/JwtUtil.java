@@ -16,6 +16,7 @@ public class JwtUtil {
     private String SECRET_KEY = "secret";
 
     public String extractUsername(String token){
+        System.out.println("Extracting username...");
         return extractClaim(token, Claims::getSubject);
     }
     public Date extractExpiration(String token){

@@ -11,11 +11,16 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
 @Configuration
@@ -59,7 +64,10 @@ public class SpringSecurityConfig implements WebMvcConfigurer {
                 .formLogin().loginPage("/login").successHandler(successHandler)
                 .and().csrf().disable()
                 .logout().logoutUrl("/logout").logoutSuccessUrl("/login")
-                .and().oauth2Login().loginPage("/login").successHandler(successHandler);
+                .deleteCookies("BusinessJwtToken")
+                .and().oauth2Login().loginPage("/login").successHandler(successHandler)
+                .and().sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
 
@@ -69,6 +77,8 @@ public class SpringSecurityConfig implements WebMvcConfigurer {
 //    public void addInterceptors(InterceptorRegistry registry) {
 //        registry.addInterceptor(new JwtCookieInterceptor()).addPathPatterns("/v1");
 //    }
+
+
 
 
 

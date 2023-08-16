@@ -15,6 +15,15 @@ public class User {
     private String email;
     private String password;
     private boolean apiUser = false;
+    private String address;
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
     public boolean isApiUser() {
         return apiUser;
@@ -23,6 +32,7 @@ public class User {
     public void setApiUser(boolean apiUser) {
         this.apiUser = apiUser;
     }
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_role", joinColumns = @JoinColumn(name = "cust_id", referencedColumnName = "id"),
@@ -69,5 +79,7 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+
+
 }
 

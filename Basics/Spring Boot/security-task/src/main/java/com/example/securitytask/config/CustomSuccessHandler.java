@@ -56,6 +56,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
         }
         else{
             username =((UserDetails) authentication.getPrincipal()).getUsername();
+            System.out.println("Bjwt username: "+username);
         }
         redirectUrl = "/dashboard";
         String usernameToGenerateToken;
@@ -70,6 +71,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
             usernameToGenerateToken = user.getUsername();
             System.out.println("usernameToGenerateToken: "+ usernameToGenerateToken);
         }
+        System.out.println("Username to generate: "+usernameToGenerateToken);
 
         final String jwt = jwtUtil.generateToken(usernameToGenerateToken);
 
